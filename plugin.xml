@@ -23,5 +23,7 @@
         <source-file src="src/android/CameraScreen.java" target-dir="src/com/nlapin/poseestimation"/>
         <source-file src="src/android/ImageBuffer.java" target-dir="src/com/nlapin/poseestimation"/>
         <source-file src="src/android/CordovaPluginSkeleton.java" target-dir="src/com/nlapin/poseestimation"/>
+
+        <framework src="src/android/build.gradle" custom="true" type="gradleReference"/>
     </platform>
 </plugin>
