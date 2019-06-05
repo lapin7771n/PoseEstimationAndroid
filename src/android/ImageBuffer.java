@@ -1,4 +1,4 @@
-package android.cordovapluginskeleton.utils;
+package com.nlapin.poseestimation;
 
 import android.graphics.Bitmap;
 import android.util.Log;

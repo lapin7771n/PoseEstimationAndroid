@@ -1,4 +1,4 @@
-package android.cordovapluginskeleton;
+package com.nlapin.poseestimation;
 
 import android.app.Activity;
 import android.graphics.Color;
