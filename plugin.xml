@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="com.nlapin.poseestimation" version="0.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>PoseEstimationAndroid</name>
+    <description>Cordova Android plugin for pose estimation</description>
+    <keywords>cordova,phonegap,pose estimation</keywords>
+
+    <platform name="android">
+        <js-module name="PoseEstimationAndroid" src="www/PoseEstimationAndroid.js">
+            <clobbers target="cordova.plugins.PoseEstimationAndroid"/>
+        </js-module>
+
+        <config-file target="config.xml" parent="/*">
+            <feature name="PoseEstimationAndroid">
+                <param name="android-package" value="com.nlapin.PoseEstimationAndroid"/>
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.CAMERA"/>
+        </config-file>
+
+        <source-file src="src/android/CameraScreen.kt" target-dir="src/com/nlapin/poseestimation"/>
+        <source-file src="src/android/ImageBuffer.java" target-dir="src/com/nlapin/poseestimation"/>
+        <source-file src="src/android/CordovaPluginSkeleton.java" target-dir="src/com/nlapin/poseestimation"/>
+    </platform>
+</plugin>

@@ -1,0 +1,20 @@
+{
+  "name": "cordova-android-poseestimation",
+  "version": "0.1.0",
+  "description": "Cordova Android plugin for pose estimation",
+  "cordova": {
+    "id": "com.nlapin.poseestimation",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "cordova",
+    "phonegap",
+    "pose estimation",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "Nikita Lapin <nlapin.java@gmail.com>",
+  "license": "ISC"
+}
