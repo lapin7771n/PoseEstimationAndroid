@@ -1,22 +1,21 @@
 package com.nlapin.poseestimation;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.PriorityQueue;
 
 public class ImageBuffer {
 
-    private static final String TAG = ImageBuffer.class.getCanonicalName();
-    public static final int SIZE_OF_IMAGE = 513;
+    static final int SIZE_OF_IMAGE = 513;
 
     /**
-     * This collection contains all images from camera
+     * This collection contains all frames from camera from camera
+     *
+     * @see PriorityQueue
      */
-    private final PriorityQueue<ByteBuffer> imageBuffer = new PriorityQueue<>();
+    private final PriorityQueue<ByteBuffer> frameBuffer = new PriorityQueue<>();
 
     private static volatile ImageBuffer mInstance;
 
@@ -31,16 +30,30 @@ public class ImageBuffer {
         return mInstance;
     }
 
+    /**
+     * Gets first element from queue
+     *
+     * @return first method from queue with frames
+     * @see PriorityQueue
+     * @see ByteBuffer
+     */
     public ByteBuffer get() {
-        return imageBuffer.poll();
+        return frameBuffer.poll();
     }
 
+    /**
+     * Adds frame to queue
+     *
+     * @param bitmap frame from camera
+     * @see Bitmap
+     * @see PriorityQueue
+     */
     public void addFrame(Bitmap bitmap) {
+        if (bitmap == null) return;
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] array = stream.toByteArray();
-        Log.d(TAG, "addFrame: " + Arrays.toString(array));
-        imageBuffer.add(ByteBuffer.wrap(array));
+        frameBuffer.add(ByteBuffer.wrap(array));
     }
 
     private ImageBuffer() {

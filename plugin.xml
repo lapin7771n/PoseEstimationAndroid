@@ -12,7 +12,7 @@
 
         <config-file target="config.xml" parent="/*">
             <feature name="PoseEstimationAndroid">
-                <param name="android-package" value="com.nlapin.PoseEstimationAndroid"/>
+                <param name="android-package" value="com.nlapin.poseestimation.CordovaPluginSkeleton"/>
             </feature>
         </config-file>
 
@@ -23,6 +23,8 @@
         <source-file src="src/android/CameraScreen.java" target-dir="src/com/nlapin/poseestimation"/>
         <source-file src="src/android/ImageBuffer.java" target-dir="src/com/nlapin/poseestimation"/>
         <source-file src="src/android/CordovaPluginSkeleton.java" target-dir="src/com/nlapin/poseestimation"/>
+
+        <resource-file src="src/android/camera_view.xml" target-dir="src/res/layout"/>
 
         <framework src="src/android/build.gradle" custom="true" type="gradleReference"/>
     </platform>

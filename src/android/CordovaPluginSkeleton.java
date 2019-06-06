@@ -1,12 +1,9 @@
 package com.nlapin.poseestimation;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.util.Log;
-import android.view.View;
 import android.widget.FrameLayout;
-
-import androidx.annotation.IdRes;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -18,27 +15,23 @@ import org.json.JSONException;
  */
 public class CordovaPluginSkeleton extends CordovaPlugin {
 
-    private static final String TAG = "CordovaPluginSkeleton";
-
     private int containerViewId = 24;
-
-    private Activity activity;
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        Log.i(TAG, "execute: start");
         if (action.equals("coolMethod")) {
             String message = args.getString(0);
             this.coolMethod(message, callbackContext);
-            activity = cordova.getActivity();
+
+            Activity activity = cordova.getActivity();
+
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
             activity.runOnUiThread(() -> {
                 FrameLayout containerView = activity.findViewById(containerViewId);
                 if (containerView == null) {
                     containerView = new FrameLayout(activity.getApplicationContext());
                     containerView.setId(containerViewId);
-
-                    webView.getView().setBackgroundColor(Color.TRANSPARENT);
-                    webView.getView().setVisibility(View.INVISIBLE);
 
                     final FrameLayout.LayoutParams containerLayoutParams =
                             new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
@@ -46,17 +39,20 @@ public class CordovaPluginSkeleton extends CordovaPlugin {
 
                     activity.addContentView(containerView, containerLayoutParams);
 
+                    //web view to front
+                    webView.getView().setBackgroundColor(Color.TRANSPARENT);
+                    webView.getView().bringToFront();
+
                     final CameraScreen cameraScreen = new CameraScreen();
 
                     activity.getFragmentManager()
                             .beginTransaction()
-                            .add(getContainerViewId(), cameraScreen)
+                            .add(containerViewId, cameraScreen)
                             .commit();
                 }
             });
             return true;
         }
-        Log.i(TAG, "execute: end");
         return false;
     }
 
@@ -68,8 +64,4 @@ public class CordovaPluginSkeleton extends CordovaPlugin {
         }
     }
 
-    public @IdRes
-    int getContainerViewId() {
-        return containerViewId;
-    }
 }
