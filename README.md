@@ -1,9 +1,9 @@
-#Cordova Android Pose Estimation Plugin
+# Cordova Android Pose Estimation Plugin
 
-###Installation
+### Installation
 `cordova plugin add https://github.com/lapin7771n/PoseEstimationAndroid.git`
 
-###Info
+### Info
 **Required Android API level 21**
 
 This plugin provides JS API for customization your skeleton and pose estimation processing.
@@ -27,11 +27,11 @@ poseEstimation.initPoseEstimation({
     });
 ```
 
-###Pose estimation on/off
+### Pose estimation on/off
 
 Also, you can start/stop pose estimation processing with this code: 
 
-####Start:
+#### Start:
 `poseEstimation.startCapture(params, callback)`
 
 **Example:**
@@ -52,7 +52,7 @@ Available params are:
 }
 ```
 
-####Stop:
+#### Stop:
 To stop pose estimation processing you need to ues this:
 
 `poseEstimation.stopCapture(callback)`
@@ -66,7 +66,7 @@ To stop pose estimation processing you need to ues this:
 ``` 
 
 
-###Video recording:
+### Video recording:
 To start video recording just call this method:
 
 ```javascript
