@@ -19,7 +19,7 @@ public class CordovaPluginSkeleton extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        if (action.equals("coolMethod")) {
+        if (action.equals("init")) {
             String message = args.getString(0);
             this.coolMethod(message, callbackContext);
 

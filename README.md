@@ -11,7 +11,7 @@ This plugin provides JS API for customization your skeleton and pose estimation 
 **Example:**
 ```javascript
 poseEstimation.initPoseEstimation({
-      "cameraDevice": poseEstimation.Camera.BACK,
+      "cameraDevice": poseEstimation.CAMERA_FRONT,
       "convertingQuality": poseEstimation.ConvertingQuality.MEDIUM,
       "style": {
           "point": {
@@ -26,6 +26,21 @@ poseEstimation.initPoseEstimation({
         //your code here...
     });
 ```
+Sample of params:
+
+```javascript
+        const poseEstimation = {
+                CAMERA_FRONT: "front",
+                CAMERA_BACK: "back",
+        
+                CONVERSION_QUALITY_HIGH: "high",
+                CONVERSION_QUALITY_MEDIUM: "medium",
+                CONVERSION_QUALITY_LOW: "low"
+                
+                //....
+        }
+```
+
 
 ### Pose estimation on/off
 
