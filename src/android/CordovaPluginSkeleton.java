@@ -16,6 +16,7 @@ import org.json.JSONException;
 public class CordovaPluginSkeleton extends CordovaPlugin {
 
     private int containerViewId = 24;
+    private CameraScreen cameraScreen;
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -43,7 +44,7 @@ public class CordovaPluginSkeleton extends CordovaPlugin {
                     webView.getView().setBackgroundColor(Color.TRANSPARENT);
                     webView.getView().bringToFront();
 
-                    final CameraScreen cameraScreen = new CameraScreen();
+                    cameraScreen = new CameraScreen();
 
                     activity.getFragmentManager()
                             .beginTransaction()
@@ -64,4 +65,27 @@ public class CordovaPluginSkeleton extends CordovaPlugin {
         }
     }
 
+    @Override
+    public void onPause(boolean multitasking) {
+        super.onPause(multitasking);
+        cameraScreen.onPause();
+    }
+
+    @Override
+    public void onResume(boolean multitasking) {
+        super.onResume(multitasking);
+        cameraScreen.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        cameraScreen.onDestroy();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        cameraScreen.onStop();
+    }
 }

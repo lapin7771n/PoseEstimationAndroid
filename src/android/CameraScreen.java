@@ -4,11 +4,10 @@ import android.Manifest;
 import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.Rational;
-import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
@@ -30,19 +29,27 @@ import androidx.lifecycle.LifecycleRegistry;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class CameraScreen extends Fragment implements LifecycleOwner {
 
     private static final String TAG = "CameraScreen";
+    private CompositeDisposable disposables;
 
     public static final List<String> REQUIRED_PERMISSIONS = Collections.singletonList(
-                                                                Manifest.permission.CAMERA);
+            Manifest.permission.CAMERA);
     private TextureView cameraViewTextureV;
     private LifecycleRegistry lifecycleRegistry;
     public static final int REQUEST_CODE_PERMISSIONS = 42;
-
-    private Size previewConfigSize;
-    private Rational rational;
+    private Flowable<Bitmap> bitmapFlowable;
+    private ImageBuffer imageBuffer;
 
     @Nullable
     @Override
@@ -50,12 +57,15 @@ public class CameraScreen extends Fragment implements LifecycleOwner {
         Log.d(TAG, "onCreateView: ");
         final View view = inflater.inflate(R.layout.camera_view, container, false);
         cameraViewTextureV = view.findViewById(R.id.cameraPreview);
+
+        imageBuffer = ImageBuffer.getInstance();
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        disposables = new CompositeDisposable();
         Log.d(TAG, "onViewCreated: ");
         if (allPermissionsGranted()) {
             startCamera();
@@ -64,6 +74,7 @@ public class CameraScreen extends Fragment implements LifecycleOwner {
                     REQUIRED_PERMISSIONS.toArray(new String[0]),
                     REQUEST_CODE_PERMISSIONS);
         }
+
     }
 
     @Override
@@ -83,12 +94,28 @@ public class CameraScreen extends Fragment implements LifecycleOwner {
     public void onResume() {
         super.onResume();
         lifecycleRegistry.markState(Lifecycle.State.RESUMED);
+        bitmapFlowable.subscribe();
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        disposables.dispose();
+        imageBuffer.clear();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-        lifecycleRegistry.markState(Lifecycle.State.DESTROYED);
+        try {
+            super.onDestroy();
+            lifecycleRegistry.markState(Lifecycle.State.DESTROYED);
+            SurfaceTexture surfaceTexture = cameraViewTextureV.getSurfaceTexture();
+            if (surfaceTexture != null)
+                surfaceTexture.release();
+        } catch (RuntimeException e) {
+            //Ignoring cordova stupid logic
+        }
     }
 
     @NonNull
@@ -125,13 +152,9 @@ public class CameraScreen extends Fragment implements LifecycleOwner {
     private void startCamera() {
         DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
-        previewConfigSize = new Size(metrics.widthPixels, metrics.heightPixels);
-        rational = new Rational(metrics.widthPixels, metrics.heightPixels);
 
         PreviewConfig previewConfig = new PreviewConfig.Builder()
-                .setTargetResolution(previewConfigSize)
-                .setTargetAspectRatio(rational)
-                .setTargetRotation(cameraViewTextureV.getDisplay().getRotation())
+                .setLensFacing(CameraX.LensFacing.FRONT)
                 .build();
 
         Preview preview = new Preview(previewConfig);
@@ -142,23 +165,25 @@ public class CameraScreen extends Fragment implements LifecycleOwner {
     }
 
     private ImageAnalysis buildImageAnalysisUseCase() {
-        ImageAnalysisConfig analysisConfig = new ImageAnalysisConfig.Builder()
-                .setTargetResolution(previewConfigSize)
-                .setTargetAspectRatio(rational)
-                .build();
+        ImageAnalysisConfig analysisConfig = new ImageAnalysisConfig.Builder().build();
 
         ImageAnalysis analysis = new ImageAnalysis(analysisConfig);
-        ImageBuffer imageBuffer = ImageBuffer.getInstance();
+        bitmapFlowable = Flowable.create((FlowableOnSubscribe<Bitmap>) emitter -> {
+            analysis.setAnalyzer((image, rotationDegrees) -> {
+                Bitmap bitmap = cameraViewTextureV.getBitmap(
+                        ImageBuffer.SIZE_OF_IMAGE,
+                        ImageBuffer.SIZE_OF_IMAGE);
 
-        analysis.setAnalyzer((image, rotationDegrees) ->
-                new Thread(() -> {
-                    Bitmap bitmap = cameraViewTextureV.getBitmap(
-                            ImageBuffer.SIZE_OF_IMAGE,
-                            ImageBuffer.SIZE_OF_IMAGE);
+                imageBuffer.addFrame(bitmap);
+            });
+        }, BackpressureStrategy.BUFFER)
+                .debounce(1000, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io());
 
-                    imageBuffer.addFrame(bitmap);
-                }).start());
+        Disposable disposable = bitmapFlowable
+                .subscribe();
 
+        disposables.add(disposable);
         return analysis;
     }
 }

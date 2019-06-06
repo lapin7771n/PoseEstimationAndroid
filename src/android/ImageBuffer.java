@@ -1,12 +1,17 @@
 package com.nlapin.poseestimation;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.PriorityQueue;
 
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
+
 public class ImageBuffer {
+    private static final String TAG = "ImageBuffer";
 
     static final int SIZE_OF_IMAGE = 513;
 
@@ -50,12 +55,23 @@ public class ImageBuffer {
      */
     public void addFrame(Bitmap bitmap) {
         if (bitmap == null) return;
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        byte[] array = stream.toByteArray();
-        frameBuffer.add(ByteBuffer.wrap(array));
+        Completable.fromAction(() -> {
+            long start = System.currentTimeMillis();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] array = stream.toByteArray();
+            frameBuffer.add(ByteBuffer.wrap(array));
+            long end = System.currentTimeMillis();
+            Log.d(TAG, "addFrame: " + frameBuffer.size());
+            Log.d(TAG, "wasted time - " + (end - start));
+        }).subscribeOn(Schedulers.computation())
+                .subscribe();
     }
 
     private ImageBuffer() {
+    }
+
+    public void clear() {
+        frameBuffer.clear();
     }
 }

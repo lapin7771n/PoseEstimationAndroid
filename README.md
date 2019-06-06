@@ -12,7 +12,7 @@ This plugin provides JS API for customization your skeleton and pose estimation 
 ```javascript
 poseEstimation.initPoseEstimation({
       "cameraDevice": poseEstimation.CAMERA_FRONT,
-      "convertingQuality": poseEstimation.ConvertingQuality.MEDIUM,
+      "convertingQuality": poseEstimation.CONVERSION_QUALITY_MEDIUM,
       "style": {
           "point": {
             "fillColor":   "#aabbcc",
@@ -32,10 +32,13 @@ Sample of params:
         const poseEstimation = {
                 CAMERA_FRONT: "front",
                 CAMERA_BACK: "back",
-        
+                
+                /**
+                 * Responsible for conversion quality of image from camera frames
+                 */
                 CONVERSION_QUALITY_HIGH: "high",
                 CONVERSION_QUALITY_MEDIUM: "medium",
-                CONVERSION_QUALITY_LOW: "low"
+                CONVERSION_QUALITY_LOW: "low",
                 
                 //....
         }
