@@ -24,7 +24,7 @@
         <source-file src="src/android/ImageBuffer.java" target-dir="src/com/nlapin/poseestimation"/>
         <source-file src="src/android/CordovaPluginSkeleton.java" target-dir="src/com/nlapin/poseestimation"/>
 
-        <resource-file src="src/android/camera_view.xml" target="src/res/layout/camera_view.xml"/>
+        <resource-file src="src/android/camera_view.xml" target="res/layout/camera_view.xml"/>
 
         <framework src="src/android/build.gradle" custom="true" type="gradleReference"/>
     </platform>
