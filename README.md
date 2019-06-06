@@ -71,7 +71,7 @@ Available params are:
 ```
 
 #### Stop:
-To stop pose estimation processing you need to ues this:
+To stop pose estimation processing you need to use this:
 
 `poseEstimation.stopCapture(callback)`
 
