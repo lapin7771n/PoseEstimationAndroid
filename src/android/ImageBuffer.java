@@ -58,13 +58,17 @@ public class ImageBuffer {
         Completable.fromAction(() -> {
             long start = System.currentTimeMillis();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100,
+                    stream);
             byte[] array = stream.toByteArray();
             frameBuffer.add(ByteBuffer.wrap(array));
             long end = System.currentTimeMillis();
             Log.d(TAG, "addFrame: " + frameBuffer.size());
-            Log.d(TAG, "wasted time - " + (end - start));
-        }).subscribeOn(Schedulers.computation())
+            stream.close();
+            Log.d(TAG, "wasted time - " + (end - start) / 1000F + " sec.");
+            frameBuffer.poll();
+        })
+                .subscribeOn(Schedulers.io())
                 .subscribe();
     }
 

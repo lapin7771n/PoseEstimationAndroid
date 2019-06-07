@@ -89,3 +89,5 @@ const poseEstimation = {
         });
     },
 };
+
+module.exports = poseEstimation;
